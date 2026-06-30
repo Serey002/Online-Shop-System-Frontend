@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+/* This block ensures Tailwind v4 configurations pick up your orange palette */
+@theme {
+  --color-primary: #EA580C;
+  --color-primary-light: #F97316;
+  --color-primary-dark: #C2410C;
+}
+
+/* This block acts as a safety fallback for standard utility class bindings */
+:root {
+  --primary-color: #EA580C;
+}
+
+/* Custom scrollbar utility to keep your category row clean */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
