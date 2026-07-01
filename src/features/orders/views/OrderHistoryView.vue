@@ -36,6 +36,16 @@
           </div>
         </div>
 
+        <div class="flex items-center justify-end mb-3">
+          <button 
+            @click="reorder(order)" 
+            :disabled="reorderLoading === order.id"
+            class="text-xs font-bold text-orange-600 hover:text-orange-700 bg-orange-50 hover:bg-orange-100 px-4 py-2 rounded-xl transition-colors disabled:opacity-50"
+          >
+            {{ reorderLoading === order.id ? 'Adding...' : '🔄 Buy Again' }}
+          </button>
+        </div>
+
         <div class="space-y-1 bg-gray-50 p-3 rounded-xl border border-gray-100">
           <span class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Items Breakdown</span>
           <p class="text-sm text-gray-700 font-medium leading-relaxed">
@@ -58,14 +68,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import api from '@/services/api';
+import { useCartStore } from '@/stores/cart';
 
+const cartStore = useCartStore();
 const orders = ref<any[]>([]);
 const loading = ref(true);
 
 onMounted(async () => {
   try {
     const response = await api.get('/orders');
-    // If your api stores data inside an explicit array envelope wrapper like response.data.data
     if (response.data && response.data.data) {
       orders.value = response.data.data;
     } else {
@@ -84,7 +95,37 @@ const getStatusColor = (status: string) => {
     case 'cancelled': return 'bg-red-100 text-red-700';
     case 'shipped': return 'bg-blue-100 text-blue-700';
     case 'preparing': return 'bg-amber-100 text-amber-700';
+    case 'served & done': return 'bg-green-100 text-green-700';
     default: return 'bg-orange-100 text-orange-700';
+  }
+};
+
+const reorderLoading = ref<number | null>(null);
+
+const reorder = async (order: any) => {
+  reorderLoading.value = order.id;
+  try {
+    const response = await api.get('/products');
+    const allProducts = response.data.data || [];
+
+    const items = order.items_summary?.split(', ') || [];
+    for (const item of items) {
+      const match = item.match(/(\d+)x\s+(.+)/);
+      if (!match) continue;
+      const quantity = parseInt(match[1]);
+      const name = match[2].trim();
+      const product = allProducts.find((p: any) => p.name.toLowerCase() === name.toLowerCase());
+      if (product) {
+        for (let i = 0; i < quantity; i++) {
+          cartStore.addToCart(product);
+        }
+      }
+    }
+    cartStore.isCartOpen = true;
+  } catch (error) {
+    console.error('Failed to reorder', error);
+  } finally {
+    reorderLoading.value = null;
   }
 };
 </script>

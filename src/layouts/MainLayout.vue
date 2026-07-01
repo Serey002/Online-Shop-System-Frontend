@@ -10,7 +10,7 @@
           <router-link to="/" class="text-gray-600 hover:text-primary transition-colors">Menu</router-link>
           <router-link v-if="auth.isAuthenticated" to="/orders" class="text-gray-600 hover:text-primary transition-colors">Orders</router-link>
           
-          <button class="relative p-2 text-gray-600 hover:text-primary transition-colors flex items-center justify-center">
+          <router-link to="/favorites" class="relative p-2 text-gray-600 hover:text-primary transition-colors flex items-center justify-center">
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               fill="none" 
@@ -27,7 +27,7 @@
             >
               {{ favorites.totalFavorites }}
             </span>
-          </button>
+          </router-link>
 
           <button @click="cart.isCartOpen = true" class="relative p-2 text-gray-600 hover:text-primary transition-colors">
             🛒

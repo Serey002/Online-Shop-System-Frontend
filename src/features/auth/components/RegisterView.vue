@@ -31,6 +31,10 @@
           </div>
 
           <form @submit.prevent="handleRegister" class="space-y-3">
+            <div v-if="errorMsg" class="p-3 bg-red-50 text-red-600 rounded-xl border border-red-200 text-xs font-semibold">
+              {{ errorMsg }}
+            </div>
+
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Full Name</label>
               <div class="relative">
@@ -65,8 +69,7 @@
                 <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 pointer-events-none text-sm">📞</span>
                 <input 
                   v-model="form.phone" 
-                  type="tel" 
-                  required 
+                  type="tel"
                   class="w-full pl-11 pr-4 py-2 rounded-xl border-none outline-none text-xs font-semibold text-gray-700 bg-[#eef4fc] focus:bg-[#e2ecf8] transition-all"
                   placeholder="You phone number" 
                 />
@@ -135,6 +138,7 @@ const videoUrl = ref(localVideo);
 const authStore = useAuthStore();
 const router = useRouter();
 const loading = ref(false);
+const errorMsg = ref('');
 
 const form = ref({
   name: '',
@@ -145,14 +149,15 @@ const form = ref({
 });
 
 const handleRegister = async () => {
+  errorMsg.value = '';
+
   if (form.value.password !== form.value.password_confirmation) {
-    alert("Passwords do not match!");
+    errorMsg.value = 'Passwords do not match!';
     return;
   }
 
   loading.value = true;
   try {
-    // Hits your Postman request data fields exactly
     await authStore.register({
       name: form.value.name,
       email: form.value.email,
@@ -160,11 +165,9 @@ const handleRegister = async () => {
       password: form.value.password
     });
     
-    alert('Registration Successful!');
-    router.push('/login');
-  } catch (error) {
-    console.error(error);
-    alert('Registration failed. Please check your network connection or API store actions.');
+    router.push('/');
+  } catch (error: any) {
+    errorMsg.value = error.response?.data?.message || 'Registration failed. Please try again.';
   } finally {
     loading.value = false;
   }

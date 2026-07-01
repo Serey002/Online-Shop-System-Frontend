@@ -1,9 +1,23 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 
+const STORAGE_KEY = 'foodsr_favorites';
+
 export const useFavoritesStore = defineStore('favorites', () => {
-  // Array of favorite product IDs
-  const favoriteIds = ref<number[]>([]);
+  const favoriteIds = ref<number[]>(loadFavorites());
+
+  function loadFavorites(): number[] {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveFavorites() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(favoriteIds.value));
+  }
 
   const totalFavorites = computed(() => favoriteIds.value.length);
 
@@ -14,10 +28,11 @@ export const useFavoritesStore = defineStore('favorites', () => {
   const toggleFavorite = (productId: number) => {
     const index = favoriteIds.value.indexOf(productId);
     if (index > -1) {
-      favoriteIds.value.splice(index, 1); // Remove if already favorited
+      favoriteIds.value.splice(index, 1);
     } else {
-      favoriteIds.value.push(productId); // Add if not favorited
+      favoriteIds.value.push(productId);
     }
+    saveFavorites();
   };
 
   return {

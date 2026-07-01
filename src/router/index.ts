@@ -2,8 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router';
 import MainLayout from '@/layouts/MainLayout.vue';
 import HomeView from '@/features/menu/views/HomeView.vue';
 import ProductDetailView from '@/features/menu/views/ProductDetailView.vue';
+import FavoritesView from '@/features/favorites/views/FavoritesView.vue';
 import LoginView from '@/features/auth/components/LoginView.vue';
-import RegisterView from '@/features/auth/components/RegisterView.vue'; // 1. Import RegisterView
+import RegisterView from '@/features/auth/components/RegisterView.vue';
+import SocialCallback from '@/features/auth/views/SocialCallback.vue'; // 1. Import RegisterView
 import ProfileView from '@/features/auth/views/ProfileView.vue';
 import OrderHistoryView from '@/features/orders/views/OrderHistoryView.vue';
 import { useAuthStore } from '@/stores/auth';
@@ -18,11 +20,13 @@ const router = createRouter({
         { path: '', name: 'home', component: HomeView },
         { path: 'profile', name: 'profile', component: ProfileView, meta: { requiresAuth: true } },
         { path: 'orders', name: 'orders', component: OrderHistoryView, meta: { requiresAuth: true } },
-        { path: 'product/:id', name: 'product-detail', component: ProductDetailView }
+        { path: 'product/:id', name: 'product-detail', component: ProductDetailView },
+        { path: 'favorites', name: 'favorites', component: FavoritesView }
       ]
     },
     { path: '/login', name: 'login', component: LoginView },
-    { path: '/register', name: 'register', component: RegisterView } // 2. Add the register route
+    { path: '/register', name: 'register', component: RegisterView },
+    { path: '/auth/callback', name: 'social-callback', component: SocialCallback } // 2. Add the register route
   ]
 });
 
