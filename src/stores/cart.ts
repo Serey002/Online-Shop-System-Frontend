@@ -52,24 +52,18 @@ export const useCartStore = defineStore('cart', () => {
     items.value = items.value.filter(i => i.product_id !== productId);
   };
 
-  // FIXED: Properly maps payload keys to match your Laravel API validation expectations
-  const submitOrder = async (address: string, paymentMethod: string) => {
-    // 1. Convert your items array into a flat description string (e.g., "2x Pepperoni Pizza, 1x Coca Cola")
+  const submitOrder = async (address: string, phone: string, paymentMethod: string) => {
     const itemsSummaryString = items.value
       .map(i => `${i.quantity}x ${i.name}`)
       .join(', ');
 
-    // 2. Map payload keys exactly matching your working Postman configuration
     const orderPayload = {
-      total_price: totalAmount.value,                           // Matches backend 'total_price' validation rule
-      items_summary: itemsSummaryString,                       // Matches backend 'items_summary' validation rule
-      notes: `Address: ${address}, Payment Method: ${paymentMethod}` // Compiles details into your backend 'notes' column
+      total_price: totalAmount.value,
+      items_summary: itemsSummaryString,
+      notes: `Address: ${address}, Phone: ${phone}, Payment: ${paymentMethod}`
     };
 
-    // 3. Fire request through your authenticated api interceptor instance
     await api.post('/orders', orderPayload);
-    
-    // 4. Reset checkout application properties on successful deployment
     items.value = []; 
     isCartOpen.value = false;
   };

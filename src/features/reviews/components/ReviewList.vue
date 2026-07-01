@@ -19,8 +19,16 @@
       >
         <div class="flex items-start justify-between mb-3">
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
-              {{ review.user?.name?.charAt(0).toUpperCase() || 'U' }}
+            <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-orange-400 to-pink-500">
+              <img 
+                v-if="review.user?.image_url" 
+                :src="review.user.image_url" 
+                :alt="review.user?.name || 'User'"
+                class="w-full h-full object-cover"
+              />
+              <div v-else class="w-full h-full flex items-center justify-center text-white font-bold text-lg">
+                {{ review.user?.name?.charAt(0).toUpperCase() || 'U' }}
+              </div>
             </div>
             <div>
               <h4 class="font-semibold text-gray-900">{{ review.user?.name || 'Anonymous' }}</h4>

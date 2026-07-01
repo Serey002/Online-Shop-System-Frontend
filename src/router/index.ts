@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import MainLayout from '@/layouts/MainLayout.vue';
 import HomeView from '@/features/menu/views/HomeView.vue';
+import ProductDetailView from '@/features/menu/views/ProductDetailView.vue';
 import LoginView from '@/features/auth/components/LoginView.vue';
 import RegisterView from '@/features/auth/components/RegisterView.vue'; // 1. Import RegisterView
 import ProfileView from '@/features/auth/views/ProfileView.vue';
@@ -16,7 +17,8 @@ const router = createRouter({
       children: [
         { path: '', name: 'home', component: HomeView },
         { path: 'profile', name: 'profile', component: ProfileView, meta: { requiresAuth: true } },
-        { path: 'orders', name: 'orders', component: OrderHistoryView, meta: { requiresAuth: true } }
+        { path: 'orders', name: 'orders', component: OrderHistoryView, meta: { requiresAuth: true } },
+        { path: 'product/:id', name: 'product-detail', component: ProductDetailView }
       ]
     },
     { path: '/login', name: 'login', component: LoginView },

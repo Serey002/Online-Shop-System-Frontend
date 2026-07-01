@@ -21,11 +21,12 @@
         v-model="form.comment" 
         placeholder="Describe your dining experience with this kitchen dish..." 
         rows="4"
-        class="w-full border rounded-xl p-3 text-xs focus:outline-none focus:ring-1 focus:ring-orange-500 mb-4 font-medium"
+        class="w-full border rounded-xl p-3 text-xs focus:outline-none focus:ring-1 focus:ring-orange-500 mb-1 font-medium"
       ></textarea>
+      <p v-if="errorMsg" class="text-red-500 text-xs mb-4">{{ errorMsg }}</p>
 
       <div class="flex justify-end gap-2 text-xs font-bold">
-        <button @click="$emit('close')" class="px-4 py-2 border rounded-xl hover:bg-gray-50 text-gray-500">Cancel</button>
+        <button @click="closeModal" class="px-4 py-2 border rounded-xl hover:bg-gray-50 text-gray-500">Cancel</button>
         <button @click="submitReview" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-xl transition">Submit Review</button>
       </div>
     </div>
@@ -33,7 +34,7 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import api from '@/services/api';
 
 const props = defineProps({
@@ -47,8 +48,16 @@ const form = reactive({
   rating: 5,
   comment: ''
 });
+const errorMsg = ref('');
 
 async function submitReview() {
+  errorMsg.value = '';
+
+  if (!form.comment.trim()) {
+    errorMsg.value = 'Please write a comment for your review.';
+    return;
+  }
+
   try {
     await api.post(`/products/${props.productId}/reviews`, {
       rating: form.rating,
@@ -56,12 +65,22 @@ async function submitReview() {
     });
 
     alert('Thank you! Your feedback has been recorded.');
-    form.comment = '';
-    form.rating = 5;
+    resetForm();
     emit('reviewSubmitted');
     emit('close');
   } catch (error) {
     alert(error.response?.data?.message || 'Something went wrong submitting your review.');
   }
+}
+
+function closeModal() {
+  resetForm();
+  emit('close');
+}
+
+function resetForm() {
+  form.comment = '';
+  form.rating = 5;
+  errorMsg.value = '';
 }
 </script>

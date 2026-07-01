@@ -93,17 +93,24 @@
           </div>
           
           <button 
-            @click="handleCheckout" 
-            :disabled="cart.items.length === 0 || isSubmitting" 
+            @click="openCheckout" 
+            :disabled="cart.items.length === 0" 
             class="w-full bg-primary hover:bg-primary-dark disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white py-3.5 rounded-xl font-bold text-base shadow-lg transition-all active:scale-[0.99] text-center"
           >
-            {{ isSubmitting ? 'Processing...' : 'Checkout' }}
+            Checkout
           </button>
         </div>
 
       </div>
     </div>
   </div>
+
+  <CheckoutModal 
+    :is-open="showCheckout" 
+    :total="cart.totalAmount"
+    @close="showCheckout = false" 
+    @submit="placeOrder"
+  />
 </template>
 
 <script setup lang="ts">
@@ -111,11 +118,12 @@ import { ref } from 'vue';
 import { useCartStore } from '@/stores/cart';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
+import CheckoutModal from './CheckoutModal.vue';
 
 const cart = useCartStore();
 const auth = useAuthStore();
 const router = useRouter();
-const isSubmitting = ref(false);
+const showCheckout = ref(false);
 
 // Appends backend asset server mapping properties matching your Laravel server configurations
 const formatImageUrl = (url: string) => {
@@ -127,23 +135,23 @@ const formatImageUrl = (url: string) => {
   return `http://localhost:8000/storage/${url}`;
 };
 
-const handleCheckout = async () => {
+const openCheckout = () => {
   if (!auth.isAuthenticated) {
     cart.isCartOpen = false;
     router.push('/login');
     return;
   }
+  showCheckout.value = true;
+};
 
-  isSubmitting.value = true;
+const placeOrder = async (form: { address: string; phone: string; payment_method: string }) => {
   try {
-    await cart.submitOrder('Phnom Penh, Cambodia', 'cash'); // Matches Laravel collection payload criteria
-    alert('🎉 Order placed successfully!');
+    await cart.submitOrder(form.address, form.phone, form.payment_method);
+    showCheckout.value = false;
     cart.isCartOpen = false;
+    alert('Order placed successfully!');
   } catch (error) {
-    console.error("Checkout failed:", error);
     alert('Failed to place order. Please check your network connection.');
-  } finally {
-    isSubmitting.value = false;
   }
 };
 </script>

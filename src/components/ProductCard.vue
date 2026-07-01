@@ -1,5 +1,8 @@
 <template>
-  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden group relative flex flex-col h-full">
+  <div 
+    class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden group relative flex flex-col h-full cursor-pointer"
+    @click="$router.push(`/product/${product.id}`)"
+  >
     
     <div class="relative aspect-square w-full bg-gray-50 overflow-hidden">
       <img 
@@ -9,7 +12,7 @@
       />
 
       <button 
-        @click.stop="favoritesStore.toggleFavorite(product.id)"
+        @click.stop.prevent="favoritesStore.toggleFavorite(product.id)"
         class="absolute top-3 right-3 z-10 p-2.5 rounded-full bg-white/80 backdrop-blur-xs shadow-sm hover:bg-white transition-all active:scale-95 group-hover:opacity-100 pointer-events-auto"
         aria-label="Toggle Favorite"
       >
@@ -28,7 +31,14 @@
 
     <div class="p-4 flex flex-col flex-1">
       <h3 class="font-bold text-gray-800 text-base line-clamp-1 mb-1">{{ product.name }}</h3>
-      <p class="text-xs text-gray-400 line-clamp-2 mb-4 flex-1">{{ product.description }}</p>
+      <p class="text-xs text-gray-400 line-clamp-2 mb-2 flex-1">{{ product.description }}</p>
+      
+      <div class="flex items-center gap-1 text-amber-400 text-xs mb-3">
+        <span v-for="star in 5" :key="star">
+          {{ star <= Math.round(product.average_rating || 0) ? '★' : '☆' }}
+        </span>
+        <span class="text-gray-400 ml-1">({{ product.reviews_count || 0 }})</span>
+      </div>
       
       <div class="flex items-center justify-between mt-auto pt-2">
         <div>
@@ -36,7 +46,7 @@
           <span class="text-lg font-extrabold text-primary">${{ parseFloat(product.price).toFixed(2) }}</span>
         </div>
         <button 
-          @click="cartStore.addToCart(product)"
+          @click.stop="cartStore.addToCart(product)"
           class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md shadow-orange-500/10 active:scale-[0.98] transition-all"
         >
           Add +
