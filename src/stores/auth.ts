@@ -31,7 +31,11 @@ export const useAuthStore = defineStore('auth', () => {
     if (!token.value) return;
     try {
       const response = await api.get('/user');
-      user.value = response.data;
+      const data = response.data;
+      if (data.image && !data.image_url) {
+        data.image_url = data.image.startsWith('http') ? data.image : `http://localhost:8000/storage/${data.image}`;
+      }
+      user.value = data;
       isAuthenticated.value = true; // Keeps session safe on refresh
     } catch (e) {
       console.error('Failed to fetch user:', e);

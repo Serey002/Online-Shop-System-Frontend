@@ -16,8 +16,8 @@
         <div class="relative">
           <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 bg-gray-100 flex items-center justify-center">
             <img 
-              v-if="imagePreview || authStore.user?.profile_image" 
-              :src="imagePreview || authStore.user?.profile_image" 
+              v-if="imagePreview || authStore.user?.image_url" 
+              :src="imagePreview || authStore.user?.image_url" 
               alt="Profile" 
               class="w-full h-full object-cover"
             />
@@ -67,23 +67,6 @@
                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" />
       </div>
 
-      <div class="pt-4 border-t border-gray-100">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Change Password (Optional)</h3>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-            <input v-model="form.password" type="password" 
-                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                   placeholder="Leave blank to keep current password" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
-            <input v-model="form.password_confirmation" type="password" 
-                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" />
-          </div>
-        </div>
-      </div>
-
       <div class="pt-6 flex justify-end">
         <button type="submit" :disabled="loading" 
                 class="bg-primary hover:bg-primary-dark text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all active:scale-95 disabled:opacity-70">
@@ -109,9 +92,7 @@ const selectedImage = ref<File | null>(null);
 const form = ref({
   name: '',
   email: '',
-  phone: '',
-  password: '',
-  password_confirmation: ''
+  phone: ''
 });
 
 onMounted(async () => {
@@ -171,17 +152,8 @@ const updateProfile = async () => {
     
     // Add profile image if selected
     if (selectedImage.value) {
-      formData.append('profile_image', selectedImage.value);
+      formData.append('image', selectedImage.value);
     }
-    
-    // Only send password if user typed one
-    if (form.value.password) {
-      formData.append('password', form.value.password);
-      formData.append('password_confirmation', form.value.password_confirmation);
-    }
-
-    // Use POST with _method for Laravel
-    formData.append('_method', 'PUT');
     
     await api.post('/user/profile', formData, {
       headers: {
@@ -193,9 +165,7 @@ const updateProfile = async () => {
     await authStore.fetchUser();
     successMessage.value = 'Profile updated successfully!';
     
-    // Clear password fields and image selection
-    form.value.password = '';
-    form.value.password_confirmation = '';
+    // Clear image selection
     selectedImage.value = null;
     imagePreview.value = '';
     

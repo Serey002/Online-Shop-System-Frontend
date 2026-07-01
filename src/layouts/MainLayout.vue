@@ -39,8 +39,8 @@
           <div v-if="auth.isAuthenticated" class="flex gap-4 items-center">
             <router-link to="/profile" class="flex items-center justify-center w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 hover:border-primary transition-colors">
               <img 
-                v-if="auth.user?.profile_image" 
-                :src="auth.user.profile_image" 
+                v-if="auth.user?.image_url" 
+                :src="auth.user.image_url" 
                 :alt="auth.user?.name || 'Profile'" 
                 class="w-full h-full object-cover"
               />

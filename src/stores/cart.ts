@@ -33,6 +33,21 @@ export const useCartStore = defineStore('cart', () => {
     isCartOpen.value = true;
   };
 
+  const increaseQuantity = (productId: number) => {
+    const item = items.value.find(i => i.product_id === productId);
+    if (item) item.quantity += 1;
+  };
+
+  const decreaseQuantity = (productId: number) => {
+    const item = items.value.find(i => i.product_id === productId);
+    if (item) {
+      item.quantity -= 1;
+      if (item.quantity <= 0) {
+        items.value = items.value.filter(i => i.product_id !== productId);
+      }
+    }
+  };
+
   const removeFromCart = (productId: number) => {
     items.value = items.value.filter(i => i.product_id !== productId);
   };
@@ -65,6 +80,8 @@ export const useCartStore = defineStore('cart', () => {
     totalAmount, 
     totalItemsCount, 
     addToCart, 
+    increaseQuantity,
+    decreaseQuantity,
     removeFromCart, 
     submitOrder 
   };
