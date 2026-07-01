@@ -34,14 +34,14 @@
 
 <script setup>
 import { reactive } from 'vue';
-import axios from 'axios';
+import api from '@/services/api';
 
 const props = defineProps({
   isOpen: Boolean,
   productId: Number
 });
 
-const emit = defineSig = defineEmits(['close']);
+const emit = defineEmits(['close', 'reviewSubmitted']);
 
 const form = reactive({
   rating: 5,
@@ -50,14 +50,15 @@ const form = reactive({
 
 async function submitReview() {
   try {
-    await axios.post(`/api/products/${props.productId}/reviews`, {
+    await api.post(`/products/${props.productId}/reviews`, {
       rating: form.rating,
       comment: form.comment
-    }, { withCredentials: true });
+    });
 
     alert('Thank you! Your feedback has been recorded.');
     form.comment = '';
     form.rating = 5;
+    emit('reviewSubmitted');
     emit('close');
   } catch (error) {
     alert(error.response?.data?.message || 'Something went wrong submitting your review.');
