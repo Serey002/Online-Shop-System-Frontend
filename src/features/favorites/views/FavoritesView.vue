@@ -6,7 +6,7 @@
     </div>
 
     <div v-if="loading" class="text-center py-20">
-      <div class="text-4xl mb-4">⏳</div>
+      <!-- <div class="text-4xl mb-4">⏳</div> -->
       <p class="text-gray-500">Loading your favorites...</p>
     </div>
 

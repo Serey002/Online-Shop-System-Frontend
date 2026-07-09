@@ -23,7 +23,7 @@
             </svg>
             <span 
               v-if="favorites.totalFavorites > 0" 
-              class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center"
+              class="absolute top-0 right-0  bg-primary text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center"
             >
               {{ favorites.totalFavorites }}
             </span>
